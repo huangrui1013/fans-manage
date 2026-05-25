@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>主题资料合集 - 本地版</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">集</div>
+        <div>
+          <h1>主题资料合集</h1>
+          <p>本地个人版</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <button class="nav-item active" data-view="collections">合集</button>
+        <button class="nav-item" data-view="inbox">收件箱</button>
+        <button class="nav-item" data-view="all">全部条目</button>
+        <button class="nav-item" data-view="settings">数据</button>
+      </nav>
+
+      <div class="sidebar-note">
+        <strong>仅保存在本机浏览器</strong>
+        <span>不会上传、不会同步。清理浏览器数据会导致内容丢失，建议定期导出备份。</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2 id="pageTitle">合集</h2>
+          <p id="pageSub">把链接、来源记录和私密附件记录整理成主题资料包。</p>
+        </div>
+        <div class="top-actions">
+          <button class="secondary" id="quickAddItemBtn">添加条目</button>
+          <button class="primary" id="newCollectionBtn">新建合集</button>
+        </div>
+      </header>
+
+      <section class="stats" aria-label="数据概览">
+        <div class="stat">
+          <span id="statCollections">0</span>
+          <label>合集</label>
+        </div>
+        <div class="stat">
+          <span id="statItems">0</span>
+          <label>条目</label>
+        </div>
+        <div class="stat">
+          <span id="statInbox">0</span>
+          <label>待整理</label>
+        </div>
+        <div class="stat">
+          <span id="statPrivate">0</span>
+          <label>私密附件记录</label>
+        </div>
+      </section>
+
+      <section id="viewRoot" class="view-root"></section>
+    </main>
+  </div>
+
+  <dialog id="collectionDialog" class="dialog">
+    <form method="dialog" id="collectionForm" novalidate>
+      <div class="dialog-head">
+        <h3 id="collectionDialogTitle">新建合集</h3>
+        <button class="icon-button dialog-close" data-dialog="collectionDialog" type="button">×</button>
+      </div>
+      <input type="hidden" id="collectionId" />
+      <label>
+        合集标题
+        <input id="collectionTitle" required maxlength="40" placeholder="例如：成员入坑资料包" />
+      </label>
+      <label>
+        简介
+        <textarea id="collectionDesc" rows="3" placeholder="这个合集整理什么内容？"></textarea>
+      </label>
+      <div class="grid-2">
+        <label>
+          组织方式
+          <select id="collectionMode">
+            <option value="type">按类型</option>
+            <option value="time">按时间</option>
+            <option value="custom">自定义</option>
+          </select>
+        </label>
+        <label>
+          可见性
+          <select id="collectionVisibility">
+            <option value="private">私密</option>
+            <option value="unlisted">仅链接</option>
+            <option value="public">公开</option>
+          </select>
+        </label>
+      </div>
+      <label>
+        分组
+        <input id="collectionGroups" placeholder="舞台、采访、综艺" />
+      </label>
+      <menu class="dialog-actions">
+        <button class="secondary dialog-close" data-dialog="collectionDialog" type="button">取消</button>
+        <button class="primary" id="saveCollectionBtn" value="default" type="button">保存</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="itemDialog" class="dialog">
+    <form method="dialog" id="itemForm" novalidate>
+      <div class="dialog-head">
+        <h3 id="itemDialogTitle">添加条目</h3>
+        <button class="icon-button dialog-close" data-dialog="itemDialog" type="button">×</button>
+      </div>
+      <input type="hidden" id="itemId" />
+      <div class="segmented" role="tablist" aria-label="条目类型">
+        <button type="button" class="seg active" data-item-type="link">链接</button>
+        <button type="button" class="seg" data-item-type="source">来源记录</button>
+        <button type="button" class="seg" data-item-type="attachment">私密附件</button>
+      </div>
+      <label>
+        保存到
+        <select id="itemCollection"></select>
+      </label>
+      <label>
+        标题
+        <input id="itemTitle" required maxlength="80" placeholder="例如：2018 初登场舞台" />
+      </label>
+      <label id="urlField">
+        URL
+        <input id="itemUrl" placeholder="https://..." />
+      </label>
+      <div class="grid-2">
+        <label>
+          平台/来源
+          <input id="itemPlatform" placeholder="Bilibili / 微信视频号 / 本地附件" />
+        </label>
+        <label>
+          作者/账号
+          <input id="itemAuthor" placeholder="@账号，可选" />
+        </label>
+      </div>
+      <div class="grid-3">
+        <label>
+          类型
+          <input id="itemCategory" placeholder="舞台" />
+        </label>
+        <label>
+          时间
+          <input id="itemTime" placeholder="2020" />
+        </label>
+        <label>
+          状态
+          <select id="itemStatus">
+            <option value="available">可访问</option>
+            <option value="login">需要登录</option>
+            <option value="appOnly">仅 App 内</option>
+            <option value="halfYear">半年可见</option>
+            <option value="unavailable">暂不可访问</option>
+            <option value="deleted">已删除</option>
+            <option value="unverified">来源不可验证</option>
+            <option value="maybeInvalid">可能失效</option>
+            <option value="privateOnly">私密</option>
+          </select>
+        </label>
+      </div>
+      <label>
+        标签
+        <input id="itemTags" placeholder="入坑必看、名场面" />
+      </label>
+      <label>
+        备注 / 摘要
+        <textarea id="itemNote" rows="4" placeholder="写给自己看的说明。公开页只应展示你自己的摘要，不要粘贴大段原文。"></textarea>
+      </label>
+      <menu class="dialog-actions">
+        <button class="secondary dialog-close" data-dialog="itemDialog" type="button">取消</button>
+        <button class="primary" id="saveItemBtn" value="default" type="button">保存</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="confirmDialog" class="dialog small-dialog">
+    <div class="dialog-head">
+      <h3>确认删除？</h3>
+      <button class="icon-button" id="confirmCancelBtn">×</button>
+    </div>
+    <p id="confirmText">删除后无法恢复。</p>
+    <menu class="dialog-actions">
+      <button class="secondary" id="confirmNoBtn">取消</button>
+      <button class="danger" id="confirmYesBtn">删除</button>
+    </menu>
+  </dialog>
+
+  <script src="./app.js"></script>
+</body>
+</html>
